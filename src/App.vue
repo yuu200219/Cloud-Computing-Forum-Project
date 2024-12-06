@@ -1,27 +1,57 @@
 <script setup>
-import { ref } from 'vue'
-import ButtonCounter from './components/ButtonCounter.vue'
-import BlogPost from './components/BlogPost.vue'
-
-const posts = ref([
-  { id: 1, title: 'My journey with Vue' },
-  { id: 2, title: 'Blogging with Vue' },
-  { id: 3, title: 'Why Vue is so fun' }
-])
-const postFontSize = ref(1)
+import HelloWorld from './components/HelloWorld.vue'
+import TheWelcome from './components/TheWelcome.vue'
+import Button from 'primevue/button';
+import LoginForm from './components/LoginForm.vue';
 </script>
 
 <template>
-    <ButtonCounter />
-    <ButtonCounter />
-    <ButtonCounter />
-    <div :style="{ fontSize: postFontSize + 'em' }">
-        <BlogPost
-            v-for="post in posts"
-            :key="post.id"
-            :title="post.title"
-            @enlarge-text="postFontSize += 0.1"
-        />
+  <header>
+    <img alt="ncu logo" class="logo" src="./assets/ncu.png" width="130" height="130" />
+
+    <div class="wrapper">
+      <HelloWorld msg="NCU Forum" />
+      <br>
     </div>
+  </header>
+  <main>
+    <div class="login"> 
+        <LoginForm />
+    </div>
+  </main>
 </template>
 
+<style scoped>
+header {
+  line-height: 1.5;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 1em;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+.login {
+  margin: auto;
+  width: 60%;
+  padding: 10px;
+  align-items: center;
+}
+</style>
