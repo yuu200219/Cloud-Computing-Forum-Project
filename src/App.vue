@@ -1,8 +1,6 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import Button from 'primevue/button';
-import LoginForm from './components/LoginForm.vue';
+import HelloWorld from './components/HelloWorld.vue';
+import LoginForm from './LoginPage/LoginForm.vue';
 </script>
 
 <template>
