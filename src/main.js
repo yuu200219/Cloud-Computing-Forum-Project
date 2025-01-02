@@ -7,18 +7,21 @@ import Material from '@primevue/themes/material';
 import Lara from '@primevue/themes/lara';
 import Nora from '@primevue/themes/nora';
 
+import ToastService from 'primevue/toastservice';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Login from '@/views/login.vue';
 import Home from '@/views/home.vue';
+import Goblin from '@/forums/goblin.vue';
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {path: '/', name: 'LoginPage', component: Login},
     {path: '/home', name: 'Homepage', component: Home},
+    {path: '/forum/goblin', name: 'GoblinPage', component: Goblin},
 ]
-})
+});
 
 const app = createApp(App);
 app.use(PrimeVue, {
@@ -31,5 +34,6 @@ app.use(PrimeVue, {
         }
     }
 });
-app.use(router)
-app.mount('#app')
+app.use(router);
+app.use(ToastService);
+app.mount('#app');

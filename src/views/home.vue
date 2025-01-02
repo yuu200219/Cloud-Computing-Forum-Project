@@ -13,37 +13,6 @@ import Content from '../components/Content.vue';
 import { InputText } from 'primevue';
 import { ref } from "vue";
 
-// const items = ref([
-//     {
-//         label: 'Home',
-//         icon: 'pi pi-home',
-//     },
-//     {
-//         label: 'Notification',
-//         icon: 'pi pi-bell',
-//     },
-//     {
-//         label: 'Message',
-//         icon: 'pi pi-send'
-//     },
-// ]);
-const profile_items = ref([
-  {
-    label: 'Profile',
-    icon: 'pi pi-user',
-    items: [
-      {
-        label: 'Settings',
-        icon: 'pi pi-cog',
-      },
-      {
-        label: 'Log-out',
-        icon: 'pi pi-sign-out',
-      },
-    ]
-  }
-]);
-
 
 </script>
 
@@ -91,7 +60,7 @@ const profile_items = ref([
 export default {
     name: 'HomePage',
     components: {
-      Header,
+      Header,Content
     }
 }
 </script>
