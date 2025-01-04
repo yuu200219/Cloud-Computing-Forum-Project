@@ -1,16 +1,13 @@
 <script setup>
-import Menu from 'primevue/menu';
+import Upload from './Upload.vue';
 import Post from './Post.vue';
 
+import Menu from 'primevue/menu';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
-
-import Dialog from 'primevue/dialog';
-import FileUpload from 'primevue/fileupload';
-import Textarea from 'primevue/textarea';
 
 import Button from 'primevue/button';
 import Image from 'primevue/image';
@@ -20,9 +17,9 @@ import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
-const fileupload = ref();
-const router = useRouter();
 const visible = ref(false);
+const router = useRouter();
+
 
 const forum_items = ref([
     {
@@ -74,13 +71,6 @@ const forum_items = ref([
     },
 ]);
 
-const upload = () => {
-    fileupload.value.upload();
-};
-
-const onUpload = () => {
-    toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000})
-};
 
 </script>
 
@@ -102,22 +92,7 @@ const onUpload = () => {
                 </a>
             </template>
         </Menu>
-        <Button label="Post" icon="pi pi-pen-to-square" rounded class="post-icon" @click="visible = true"/>
-        <Dialog v-model:visible="visible" modal header="新貼文" >
-            <!-- <div class="card"> -->
-                <Toast />
-                <FileUpload name="demo[]" url="/api/upload" @upload="onUpload($event)" :multiple="true" accept="image/*" :maxFileSize="1000000">
-                    <template #empty>
-                        <span>拖移圖片或是使用"Choose"選擇上傳圖片"</span>
-                    </template>
-                </FileUpload>
-            <!-- </div> -->
-            <Textarea v-model="blogContent" rows="10" cols="50" placeholder="什麼新鮮事？"/>
-            <template #footer>
-                <Button label="Upload" icon="pi pi-upload" @click="saveBlog" />
-                <Button label="Cancel" icon="pi pi-times" @click="visible = false" />
-            </template>
-        </Dialog>
+        <Upload />
     </div>
     
     <div class="content">
@@ -131,10 +106,8 @@ const onUpload = () => {
                 <TabPanels>
                 <TabPanel value="0">
                     <div class="post-container">
-                        <Image src="/src/assets/img/00.jpg" alt="Image" width="50%" />
                         <Post class="post" />
                         <Post class="post" />
-                        <Image src="/src/assets/img/00.jpg" alt="Image" width="50%" />
                         <Post class="post" />
                         <Post class="post" />
                         <Post class="post" />
@@ -143,9 +116,7 @@ const onUpload = () => {
                 </TabPanel>
                 <TabPanel value="1">
                     <div class="post-container">
-                        <Image src="/src/assets/img/00.jpg" alt="Image" width="50%" />
                         <Post class="post" />
-                        
                     </div>
                 </TabPanel>
             </TabPanels>
@@ -200,10 +171,10 @@ const onUpload = () => {
     border-radius: 2rem;
     overflow: scroll;
     margin-bottom: 10px;
-    height: 85%;
+    height: 90%;
     margin: 0 10% 0 10%;
     min-width: 350px;
-    max-width: 900px;
+    max-width: 700px;
 }
 .tab-list-container {
     position: sticky;
@@ -224,9 +195,6 @@ const onUpload = () => {
   height: 100% !important;
   align-items: center !important;
   justify-content: center !important;
-}
-.post-icon {
-    margin-top: 10px;
 }
 /* .tab {
     position: sticky;

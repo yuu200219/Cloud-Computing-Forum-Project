@@ -13,6 +13,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '@/views/login.vue';
 import Home from '@/views/home.vue';
 import Goblin from '@/forums/goblin.vue';
+import School from '@/forums/school.vue';
+import Course from '@/forums/course.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,7 +22,9 @@ const router = createRouter({
     {path: '/', name: 'LoginPage', component: Login},
     {path: '/home', name: 'Homepage', component: Home},
     {path: '/forum/goblin', name: 'GoblinPage', component: Goblin},
-]
+    {path: '/forum/school', name: 'SchoolPage', component: School},
+    {path: '/forum/course', name: 'CoursePage', component: Course},
+]   
 });
 
 const app = createApp(App);
