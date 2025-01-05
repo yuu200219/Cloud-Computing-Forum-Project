@@ -25,6 +25,7 @@ const blogContent = ref('');
         <!-- <FileUpload ref="fileupload" name="demo[]" url="/api/upload" accept="image/*" :multiple="true" :maxFileSize="1000000" @upload="onUpload" /> -->
     <!-- </div> -->
         <Textarea v-model="blogContent" rows="10" cols="50" placeholder="什麼新鮮事？"/>
+        <p>您輸入的內容：{{ blogContent }}</p>
         <template #footer>
             <Button label="Upload" icon="pi pi-upload" @click="handlePost" />
             <Button label="Cancel" icon="pi pi-times" @click="visible = false" />
@@ -44,7 +45,8 @@ export default {
     async handlePost() {
         try {
         // Simulate saving blog content
-        const response = await fetch('/api/posts', {
+        console.log(this.blogContent);
+        const response = await fetch('https://zs49un6n95.execute-api.us-east-1.amazonaws.com/posts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: this.blogContent }),
