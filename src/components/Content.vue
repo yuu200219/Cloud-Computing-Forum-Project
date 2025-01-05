@@ -9,6 +9,10 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 
+import Divider from 'primevue/divider';
+import Dialog from 'primevue/dialog';
+import Textarea from 'primevue/textarea';
+
 import Button from 'primevue/button';
 import Image from 'primevue/image';
 
@@ -74,37 +78,77 @@ const forum_items = ref([
 </script>
 
 <script>
-
 export default {
-  components: { Post },
-  setup() {
-    // 定义响应式变量 posts
-    const posts = ref([]);
-
-    // 方法：更新 posts 数据
-    const handleUpdatedPosts = (updatedPosts) => {
-      console.log('Updated posts received:', updatedPosts);
-      posts.value = updatedPosts;
-    };
-
-    // 计算属性：根据 likeCount 降序排列
-    const sortedByLikes = computed(() => {
-      return [...posts.value].sort((a, b) => b.likeCount - a.likeCount);
-    });
-
-    // 计算属性：根据 timestamp 降序排列
-    const sortedByTimestamp = computed(() => {
-      return [...posts.value].sort((a, b) => b.timestamp - a.timestamp);
-    });
-
+  components: { Post, Upload },
+  data() {
     return {
-      posts,
-      handleUpdatedPosts,
-      sortedByLikes,
-      sortedByTimestamp,
+      posts: [], // 定義響應式數據 posts
     };
   },
+  computed: {
+    // 计算属性：根据 likeCount 降序排列
+    sortedByLikes() {
+      return [...this.posts].sort((a, b) => b.likeCount - a.likeCount);
+    },
+
+    // 计算属性：根据 timestamp 降序排列
+    sortedByTimestamp() {
+      return [...this.posts].sort((a, b) => b.timestamp - a.timestamp);
+    },
+  },
+  methods: {
+    // 方法：更新 posts 数据
+    handleUpdatedPosts(updatedPosts) {
+      console.log('Updated posts received:', updatedPosts);
+      this.posts = updatedPosts;
+    },
+    toggleView(id) {
+      const post = this.posts.find(post => post.id === id);
+      if (post) {
+        post.isExpanded = !post.isExpanded;
+      }
+    },
+    toggleLike(postId) {
+      const post = this.posts.find((p) => p.id === postId);
+      if (post) {
+        post.isLiked = !post.isLiked;
+        post.likeCount += post.isLiked ? 1 : -1;
+      }
+    },
+    showCommentDialog(postId) {
+        const post = this.posts.find((p) => p.id === postId);
+        if (post) {
+            post.isCommentDialogVisible = true;
+        }
+    },
+    addComment(postId) {
+      const post = this.posts.find((p) => p.id === postId);
+      if (post && post.newComment.trim()) {
+        post.comments.push(post.newComment);
+        post.newComment = '';
+      }
+    },
+    // sendPostsToParent() {
+    //   // 使用 $emit 触发事件，将 posts 数据发送到父组件
+    //   console.log("post.vue send event to Content.vue");
+    //   this.$emit('updateposts', this.posts);
+    // },
+    updatePostsFromChild(posts) {
+      console.log("post.vue's event occur!");
+      this.posts = posts.map((post) => ({
+        ...post,
+        isExpanded: false,
+        isLiked: false,
+        likeCount: post.likeCount || 0,
+        isCommentDialogVisible: false,
+        newComment: '',
+        comments: post.comments || [],
+      }));
+    //   this.sendPostsToParent();
+    },
+  },
 };
+// import code from post.vue
 </script>
 
 
@@ -138,16 +182,18 @@ export default {
                     </TabList>
                 </div>
                 <TabPanels>
-                    <!-- 熱門貼文（根據 likeCount 排序） -->
                     <TabPanel value="0">
                         <div class="post-container">
-                        <post @updateposts="handleUpdatedPosts" />
+                        <post @updateposts="handleUpdatedPosts" />    
                         <Post
                             v-for="post in sortedByLikes"
                             :key="post.id"
                             class="post"
                             :post="post"
                         />
+                        
+
+                        
                         </div>
                     </TabPanel>
                     
@@ -256,4 +302,71 @@ export default {
         
     }
 } */
+p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.content-wrapper {
+    
+    /* max-width: 800px;
+    min-width: 250px; */
+    align-items: center;
+    justify-self: center;
+}
+.comment-content-wrapper {
+    align-items: center;
+    justify-self: center;
+    max-width: 500px;;
+}
+.dialog-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.dialog-header p {
+  margin: 0; /* Removes default margin */
+  padding-left: 220px;
+}
+.custom-textarea {
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    border-radius: 3rem;
+}
+.post-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 0.5rem;
+  margin-bottom: 10px;
+}
+.textarea-container {
+    display: flex; /* Use flexbox for layout */
+    align-items: flex-start; /* Align items to the top */
+}
+.send-button {
+  align-self: flex-start; /* Align the button with the top of the textarea */
+}
+.comment-wrapper {
+    padding: 5px;
+    padding-left: 5px;
+    margin-bottom: 10px;
+}
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+.username {
+  font-weight: bold;
+  font-size: 16px;
+}
 </style>

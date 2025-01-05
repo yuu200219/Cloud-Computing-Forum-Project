@@ -6,96 +6,97 @@ import Dialog from 'primevue/dialog';
 import Textarea from 'primevue/textarea';
 import Avatar from 'primevue/avatar';
 
+import Upload from './Upload.vue';
+
 </script>
 
 <template>
     <div class="content-wrapper">
-    <upload @update-posts="updatePostsFromChild" />
-    <div v-for="post in posts" :key="post.id" class="post">
-    <p>
-        {{ post.isExpanded ? post.content : (post.content.slice(0, 100) + '...') }}
-    </p>
-    <Button @click="toggleView(post.id)" variant="text" style="font-size: 15px; color: gray; padding: 0">
-        {{ post.isExpanded ? 'View Less' : 'View More...' }}
-    </Button>
-    <br>
-    <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
-    <br>
-    <br>
-    <Button 
-        :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" 
-        rounded 
-        variant="text"
-        @click="toggleLike(post.id)"
-        :style="post.isLiked ? 'color: red' : ''"
-    />
-    <span>{{ post.likeCount }}</span>
-    <Button 
-        icon="pi pi-comment"
-        rounded
-        variant="text"
-        @click="showCommentDialog(post.id)"
-    />
-    <!-- <Button icon="pi pi-send" rounded variant="text"/> -->
-    <Divider />
-    <Dialog 
-        v-model:visible="post.isCommentDialogVisible" 
-        modal 
-        :key="'dialog-' + post.id"
-    >
-        <template #header>
-            <div class="dialog-header">
-                <!-- <Button label="取消" text plain rounded=""/> -->
-                 <span class="reply">回覆</span>
-            </div>
-        </template>
-        <div class="post-header">
-            <img :src="post.avatar" alt="User Avatar" class="avatar" />
-            <span class="username">{{ post.username }}</span>
-        </div>
-        <!-- <div class="user-idientity">
-            <Avatar label="Y" shape="circle" style="background-color: #ece9fc; color: #2a1261"/>
-            <p style="font-weight: bold;">
-                {{ post.user }}
-            </p>
-        </div> -->
-        <div class="comment-content-wrapper">
+    <upload @update-posts="updatePostsFromChild"/>
+        <div v-for="post in posts" :key="post.id" class="post">
             <p>
-                {{ post.content }}
+                {{ post.isExpanded ? post.content : (post.content.slice(0, 100) + '...') }}
             </p>
-            <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
-            <Divider/>
-            <div>
-                
-                <div v-for="(comment, index) in post.comments" :key="index">
-                    <p class="comment-wrapper">
-                    {{ comment }}
+            <Button @click="toggleView(post.id)" variant="text" style="font-size: 15px; color: gray; padding: 0">
+                {{ post.isExpanded ? 'View Less' : 'View More...' }}
+            </Button>
+            <br>
+                <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
+            <br>
+            <br>
+            <Button 
+                :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                rounded 
+                variant="text"
+                @click="toggleLike(post.id)"
+                :style="post.isLiked ? 'color: red' : ''"
+            />
+            <span>{{ post.likeCount }}</span>
+            <Button 
+                icon="pi pi-comment"
+                rounded
+                variant="text"
+                @click="showCommentDialog(post.id)"
+            />
+            <!-- <Button icon="pi pi-send" rounded variant="text"/> -->
+            <Divider />
+            <Dialog 
+                v-model:visible="post.isCommentDialogVisible" 
+                modal 
+                :key="'dialog-' + post.id"
+            >
+                <template #header>
+                    <div class="dialog-header">
+                        <!-- <Button label="取消" text plain rounded=""/> -->
+                        <span class="reply">回覆</span>
+                    </div>
+                </template>
+                <div class="post-header">
+                    <img :src="post.avatar" alt="User Avatar" class="avatar" />
+                    <span class="username">{{ post.username }}</span>
+                </div>
+                <!-- <div class="user-idientity">
+                    <Avatar label="Y" shape="circle" style="background-color: #ece9fc; color: #2a1261"/>
+                    <p style="font-weight: bold;">
+                        {{ post.user }}
                     </p>
+                </div> -->
+                <div class="comment-content-wrapper">
+                    <p>
+                        {{ post.content }}
+                    </p>
+                    <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
                     <Divider/>
+                    <div>
+                        <div v-for="(comment, index) in post.comments" :key="index">
+                            <p class="comment-wrapper">
+                            {{ comment }}
+                            </p>
+                            <Divider/>
+                        </div>
+                        
+                    </div>
+                    <div class="textarea-container">
+                        <Textarea 
+                        v-model="post.newComment" 
+                        rows="1" 
+                        cols="50" 
+                        class="custom-textarea"
+                        placeholder="寫下評論..."
+                        style="resize: none"
+                        auto-resize
+                        />
+                        <Button 
+                        icon="pi pi-send" 
+                        @click="addComment(post.id)" 
+                        plain text rounded
+                        class="send-button"
+                        />
+                    </div>
                 </div>
                 
-            </div>
-            <div class="textarea-container">
-                <Textarea 
-                v-model="post.newComment" 
-                rows="1" 
-                cols="50" 
-                class="custom-textarea"
-                placeholder="寫下評論..."
-                style="resize: none"
-                auto-resize
-                />
-                <Button 
-                icon="pi pi-send" 
-                @click="addComment(post.id)" 
-                plain text rounded
-                class="send-button"
-                />
-            </div>
+            </Dialog>
         </div>
-        
-    </Dialog>
-    </div>
 
     
     </div>
@@ -107,6 +108,9 @@ export default {
     return {
       posts: [], // 初始化 posts 为一个空数组
     };
+  },
+  components: {
+    Upload,
   },
   methods: {
     toggleView(id) {
@@ -137,9 +141,11 @@ export default {
     },
     sendPostsToParent() {
       // 使用 $emit 触发事件，将 posts 数据发送到父组件
+      console.log("post.vue send event to Content.vue");
       this.$emit('updateposts', this.posts);
     },
     updatePostsFromChild(posts) {
+      console.log("post.vue's event occur!");
       this.posts = posts.map((post) => ({
         ...post,
         isExpanded: false,
