@@ -22,7 +22,7 @@ const blogContent = ref('');
 <Dialog v-model:visible="visible" modal header="新貼文" >
     <!-- <div class="card"> -->
         <Toast />
-        <FileUpload ref="fileupload" name="demo[]" url="/api/upload" accept="image/*" :multiple="true" :maxFileSize="1000000" @upload="onUpload" />
+        <!-- <FileUpload ref="fileupload" name="demo[]" url="/api/upload" accept="image/*" :multiple="true" :maxFileSize="1000000" @upload="onUpload" /> -->
     <!-- </div> -->
         <Textarea v-model="blogContent" rows="10" cols="50" placeholder="什麼新鮮事？"/>
         <template #footer>

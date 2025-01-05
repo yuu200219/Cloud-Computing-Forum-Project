@@ -44,7 +44,8 @@ import Avatar from 'primevue/avatar';
     >
         <template #header>
             <div class="dialog-header">
-                <Button label="取消" text plain rounded=""/>
+                <!-- <Button label="取消" text plain rounded=""/> -->
+                 <span class="reply">回覆</span>
             </div>
         </template>
         <div class="post-header">

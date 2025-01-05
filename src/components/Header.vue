@@ -9,6 +9,39 @@ import InputGroupAddon from 'primevue/inputgroupaddon';
 
 import { InputText } from 'primevue';
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const items_start = ref([
+    {
+        label: 'Home',
+        icon: 'pi pi-home',
+        command: () => {
+                router.push('/home')
+        },
+    },
+    {
+        label: 'Notification',
+        icon: 'pi pi-bell',
+    },
+    {
+        label: 'Settings',
+        icon: 'pi pi-cog',
+        items: [
+            {
+                label: 'Profile',
+                icon: 'pi pi-user'
+            },
+            {
+                label: 'Logout',
+                icon: 'pi pi-sign-out',
+                command: () => {
+                    router.push('/')
+                }
+            }
+        ]
+    }
+])
 </script>
 
 <template>
@@ -30,7 +63,7 @@ import { ref } from "vue";
                 </div>
             </template>
         </Menubar> -->
-        <Toolbar class="menu-bar">
+        <Menubar class="menu-bar" :model="items_start">
             <template #start>
                 <div class="title-img">
                     <span class="text-xl font-semibold">
@@ -38,9 +71,20 @@ import { ref } from "vue";
                          /  {{ currentSubdirectory }}
                     </span>
                 </div>
-                
             </template>
-            
+            <template #item="{ item, props, hasSubmenu }">
+                <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                    <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+                        <span :class="item.icon" />
+                        <span>{{ item.label }}</span>
+                    </a>
+                </router-link>
+                <a v-else v-ripple :href="item.url" :target="item.target" v-bind="props.action">
+                    <span :class="item.icon" />
+                    <span>{{ item.label }}</span>
+                    <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down" />
+                </a>
+            </template>
             <div class="flex items-center gap-2">
                 <InputGroup>
                     <InputText placeholder="Search" type="text" class="w-32 sm:w-auto" />
@@ -52,12 +96,12 @@ import { ref } from "vue";
             
             <template #end>
                 <!-- <Button label="Post" icon="pi pi-pen-to-square" text plain rounded class="post-icon"/> -->
-                <Button label="Notification" icon="pi pi-bell" text plain rounded/>
-                <Button label="Settings" icon="pi pi-cog" text plain rounded/>
+                <!-- <Button label="Notification" icon="pi pi-bell" text plain rounded/>
+                <Button label="Settings" icon="pi pi-cog" text plain rounded/> -->
                 <Avatar label="Y" shape="circle" style="background-color: #ece9fc; color: #2a1261"/>
             </template>
 
-        </Toolbar>
+        </Menubar>
         <!-- <div class="profile">
             <Button label="Profile" icon="pi pi-user" />
         </div> -->
@@ -103,6 +147,8 @@ export default {
 .profile {
     flex: 5%;
 }
-
+.menu-bar .pi-home {
+    border-radius: 50%;
+}
 
 </style>
