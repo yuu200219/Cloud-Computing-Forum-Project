@@ -15,6 +15,7 @@ import Image from 'primevue/image';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { computed } from 'vue';
 
 const toast = useToast();
 const visible = ref(false);
@@ -70,9 +71,42 @@ const forum_items = ref([
         ]
     },
 ]);
-
-
 </script>
+
+<script>
+
+export default {
+  components: { Post },
+  setup() {
+    // 定义响应式变量 posts
+    const posts = ref([]);
+
+    // 方法：更新 posts 数据
+    const handleUpdatedPosts = (updatedPosts) => {
+      console.log('Updated posts received:', updatedPosts);
+      posts.value = updatedPosts;
+    };
+
+    // 计算属性：根据 likeCount 降序排列
+    const sortedByLikes = computed(() => {
+      return [...posts.value].sort((a, b) => b.likeCount - a.likeCount);
+    });
+
+    // 计算属性：根据 timestamp 降序排列
+    const sortedByTimestamp = computed(() => {
+      return [...posts.value].sort((a, b) => b.timestamp - a.timestamp);
+    });
+
+    return {
+      posts,
+      handleUpdatedPosts,
+      sortedByLikes,
+      sortedByTimestamp,
+    };
+  },
+};
+</script>
+
 
 <template>
 <div class="lower-section">
@@ -104,31 +138,38 @@ const forum_items = ref([
                     </TabList>
                 </div>
                 <TabPanels>
-                <TabPanel value="0">
-                    <div class="post-container">
-                        <Post class="post" />
-                        <Post class="post" />
-                        <Post class="post" />
-                        <Post class="post" />
-                        <Post class="post" />
-                        <Post class="post" />
-                    </div>
-                </TabPanel>
-                <TabPanel value="1">
-                    <div class="post-container">
-                        <Post class="post" />
-                    </div>
-                </TabPanel>
-            </TabPanels>
+                    <!-- 熱門貼文（根據 likeCount 排序） -->
+                    <TabPanel value="0">
+                        <div class="post-container">
+                        <post @updateposts="handleUpdatedPosts" />
+                        <Post
+                            v-for="post in sortedByLikes"
+                            :key="post.id"
+                            class="post"
+                            :post="post"
+                        />
+                        </div>
+                    </TabPanel>
+                    
+                    <!-- 最新貼文（根據 timestamp 排序） -->
+                    <TabPanel value="1">
+                        <div class="post-container">
+                        <post @updateposts="handleUpdatedPosts" />
+                        <Post
+                            v-for="post in sortedByTimestamp"
+                            :key="post.id"
+                            class="post"
+                            :post="post"
+                        />
+                        </div>
+                    </TabPanel>
+                </TabPanels>
             </Tabs>
-        
-        
-        
-        
     </div>
 </div>
 
 </template>
+
 
 <style scoped>
 .lower-section {

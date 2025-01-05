@@ -8,6 +8,7 @@ import Lara from '@primevue/themes/lara';
 import Nora from '@primevue/themes/nora';
 
 import ToastService from 'primevue/toastservice';
+import Toast from 'primevue/toast';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Login from '@/views/login.vue';
@@ -39,5 +40,6 @@ app.use(PrimeVue, {
     }
 });
 app.use(router);
+app.use(PrimeVue);
 app.use(ToastService);
 app.mount('#app');
