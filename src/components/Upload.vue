@@ -31,6 +31,7 @@ const fileupload = ref();
             <Button label="Cancel" icon="pi pi-times" @click="visible = false" />
         </template>
 </Dialog>
+<slot name="trigger"></slot>
 </template>
 
 <script>
@@ -88,9 +89,9 @@ export default {
         if (!response.ok) {
           throw new Error('Failed to fetch posts');
         }
-
+        
         const posts = await response.json();
-
+        console.log('Upload.vue :', posts);
         // 触发事件更新 `post.vue` 的数据
         this.$emit('update-posts', posts);
       } catch (error) {
