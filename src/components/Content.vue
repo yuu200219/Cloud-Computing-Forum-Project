@@ -20,6 +20,7 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { computed } from 'vue';
+import ChillGuyImage from "@/assets/img/chillguy.jpg";
 
 const toast = useToast();
 const visible = ref(false);
@@ -108,6 +109,8 @@ export default {
                 isCommentDialogVisible: false,
                 newComment: '',
                 comments: post.comments || [],
+                username : "hank",
+                avatar : ChillGuyImage,
             }));
         } catch (error) {
             console.error('Error fetching posts:', error);
@@ -155,6 +158,8 @@ export default {
                 isCommentDialogVisible: false,
                 newComment: '',
                 comments: post.comments || [],
+                username : "hank",
+                avatar : ChillGuyImage,
             }));
             //   this.sendPostsToParent(); 
             console.log(this.posts)
@@ -314,7 +319,7 @@ export default {
                                         <div>
                                             <div v-for="(comment, index) in post.comments" :key="index">
                                                 <p class="comment-wrapper">
-                                                    {{ comment }}
+                                                    {{ post.username }} {{ comment }}
                                                 </p>
                                                 <Divider />
                                             </div>
