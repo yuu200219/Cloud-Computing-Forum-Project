@@ -96,12 +96,15 @@ export default {
       return [...this.posts].sort((a, b) => b.timestamp - a.timestamp);
     },
   },
+  async mounted() {
+        try {
+            const response = await fetch('https://zs49un6n95.execute-api.us-east-1.amazonaws.com/get_posts');
+            this.posts = await response.json();
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        }
+  },
   methods: {
-    // 方法：更新 posts 数据
-    // handleUpdatedPosts(updatedPosts) {
-    //   console.log('Updated posts received:', updatedPosts);
-    //   this.posts = updatedPosts;
-    // },
     toggleView(id) {
       const post = this.posts.find(post => post.id === id);
       if (post) {
