@@ -12,7 +12,7 @@ import Upload from './Upload.vue';
 
 <template>
     <div class="content-wrapper">
-    <upload @update-posts="updatePostsFromChild"/>
+    <!-- <upload @update-posts="updatePostsFromChild"/> -->
         <div v-for="post in posts" :key="post.id" class="post">
             <p>
                 {{ post.isExpanded ? post.content : (post.content.slice(0, 100) + '...') }}

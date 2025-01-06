@@ -1,6 +1,6 @@
 <script setup>
 import Upload from './Upload.vue';
-import Post from './Post.vue';
+// import Post from './Post.vue';
 
 import Menu from 'primevue/menu';
 import Tabs from 'primevue/tabs';
@@ -79,7 +79,7 @@ const forum_items = ref([
 
 <script>
 export default {
-  components: { Post, Upload },
+  components: { Upload },
   data() {
     return {
       posts: [], // 定義響應式數據 posts
@@ -98,10 +98,10 @@ export default {
   },
   methods: {
     // 方法：更新 posts 数据
-    handleUpdatedPosts(updatedPosts) {
-      console.log('Updated posts received:', updatedPosts);
-      this.posts = updatedPosts;
-    },
+    // handleUpdatedPosts(updatedPosts) {
+    //   console.log('Updated posts received:', updatedPosts);
+    //   this.posts = updatedPosts;
+    // },
     toggleView(id) {
       const post = this.posts.find(post => post.id === id);
       if (post) {
@@ -170,7 +170,7 @@ export default {
                 </a>
             </template>
         </Menu>
-        <Upload />
+        <Upload @update-posts="updatePostsFromChild" />
     </div>
     
     <div class="content">
@@ -184,29 +184,78 @@ export default {
                 <TabPanels>
                     <TabPanel value="0">
                         <div class="post-container">
-                        <post @updateposts="handleUpdatedPosts" />    
-                        <Post
-                            v-for="post in sortedByLikes"
-                            :key="post.id"
-                            class="post"
-                            :post="post"
-                        />
-                        
-
-                        
+                        <!-- <post @updateposts="handleUpdatedPosts" />     -->
+                            <!-- <Post
+                                v-for="post in posts"
+                                :key="post.id"
+                                class="post"
+                                :post="post"
+                            /> -->
+                            <div v-for="post in sortedByLikes" :key="post.id" class="post">
+                                <p>
+                                    {{ post.isExpanded ? post.content : (post.content.slice(0, 100) + '...') }}
+                                </p>
+                                <Button @click="toggleView(post.id)" variant="text" style="font-size: 15px; color: gray; padding: 0">
+                                    {{ post.isExpanded ? 'View Less' : 'View More...' }}
+                                </Button>
+                                <br>
+                                    <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
+                                <br>
+                                <br>
+                                <Button 
+                                    :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                                    rounded 
+                                    variant="text"
+                                    @click="toggleLike(post.id)"
+                                    :style="post.isLiked ? 'color: red' : ''"
+                                />
+                                <span>{{ post.likeCount }}</span>
+                                <Button 
+                                    icon="pi pi-comment"
+                                    rounded
+                                    variant="text"
+                                    @click="showCommentDialog(post.id)"
+                                /> 
+                            </div>
                         </div>
                     </TabPanel>
                     
                     <!-- 最新貼文（根據 timestamp 排序） -->
                     <TabPanel value="1">
                         <div class="post-container">
-                        <post @updateposts="handleUpdatedPosts" />
-                        <Post
-                            v-for="post in sortedByTimestamp"
-                            :key="post.id"
-                            class="post"
-                            :post="post"
-                        />
+                        <!-- <post @updateposts="handleUpdatedPosts" /> -->
+                            <!-- <Post
+                                v-for="post in posts"
+                                :key="post.id"
+                                class="post"
+                                :post="post"
+                            /> -->
+                            <div v-for="post in sortedByTimestamp" :key="post.id" class="post">
+                                <p>
+                                    {{ post.isExpanded ? post.content : (post.content.slice(0, 100) + '...') }}
+                                </p>
+                                <Button @click="toggleView(post.id)" variant="text" style="font-size: 15px; color: gray; padding: 0">
+                                    {{ post.isExpanded ? 'View Less' : 'View More...' }}
+                                </Button>
+                                <br>
+                                    <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
+                                <br>
+                                <br>
+                                <Button 
+                                    :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                                    rounded 
+                                    variant="text"
+                                    @click="toggleLike(post.id)"
+                                    :style="post.isLiked ? 'color: red' : ''"
+                                />
+                                <span>{{ post.likeCount }}</span>
+                                <Button 
+                                    icon="pi pi-comment"
+                                    rounded
+                                    variant="text"
+                                    @click="showCommentDialog(post.id)"
+                                /> 
+                            </div>
                         </div>
                     </TabPanel>
                 </TabPanels>
