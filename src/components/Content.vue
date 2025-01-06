@@ -99,7 +99,14 @@ export default {
     },
     async mounted() {
         try {
-            const response = await fetch('https://zs49un6n95.execute-api.us-east-1.amazonaws.com/get_posts');
+            const response = await fetch('https://zs49un6n95.execute-api.us-east-1.amazonaws.com/get_posts', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    board: this.currentSubdirectory(),
+                }),
+            });
             this.posts = await response.json();
             this.posts = this.posts.map((post) => ({
                 ...post,
@@ -109,14 +116,19 @@ export default {
                 isCommentDialogVisible: false,
                 newComment: '',
                 comments: post.comments || [],
-                username : "hank",
-                avatar : ChillGuyImage,
+                username: "hank",
+                avatar: ChillGuyImage,
             }));
         } catch (error) {
             console.error('Error fetching posts:', error);
         }
     },
     methods: {
+        currentSubdirectory() {
+            const path = this.$route.path; // Get the current path
+            const segments = path.split('/').filter(Boolean); // Split by '/' and remove empty segments
+            return segments[segments.length - 1] || ''; // Return the first segment or an empty string
+        },
         toggleView(id) {
             const post = this.posts.find(post => post.id === id);
             if (post) {
@@ -158,8 +170,8 @@ export default {
                 isCommentDialogVisible: false,
                 newComment: '',
                 comments: post.comments || [],
-                username : "hank",
-                avatar : ChillGuyImage,
+                username: "hank",
+                avatar: ChillGuyImage,
             }));
             //   this.sendPostsToParent(); 
             console.log(this.posts)

@@ -17,6 +17,10 @@ import Home from '@/views/home.vue';
 import Goblin from '@/forums/goblin.vue';
 import School from '@/forums/school.vue';
 import Course from '@/forums/course.vue';
+import Club from '@/forums/club.vue';
+import Gossip from '@/forums/gossip.vue';
+import Meme from '@/forums/meme.vue';
+import Intern from '@/forums/intern.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,6 +30,10 @@ const router = createRouter({
     {path: '/forum/goblin', name: 'GoblinPage', component: Goblin},
     {path: '/forum/school', name: 'SchoolPage', component: School},
     {path: '/forum/course', name: 'CoursePage', component: Course},
+    {path: '/forum/club', name: 'ClubPage', component: Club},
+    {path: '/forum/gossip', name: 'GossipPage', component: Gossip},
+    {path: '/forum/meme', name: 'MemePage', component: Meme},
+    {path: '/forum/intern', name: 'InternPage', component: Intern},
 ]   
 });
 
