@@ -95,7 +95,8 @@ const items_start = ref([
                             <Button icon="pi pi-search" severity="secondary" variant="text" @click="toggleSearch" />
                         </InputGroupAddon>
                     </InputGroup>
-                    <Avatar :image="ChillGuyImage" shape="circle" style="background-color: #ece9fc; color: #2a1261"/>
+                    <Button label="Logout" icon="pi pi-sign-out" text plain @click="toggleLogout" />
+                    <img :src=ChillGuyImage alt="User Avatar" class="avatar" />
                 </div>
                 
             </template>
@@ -121,11 +122,26 @@ export default {
       const segments = path.split('/').filter(Boolean); // Split by '/' and remove empty segments
       return this.CapitalizeFirstLetter(segments[segments.length-1]) || ''; // Return the first segment or an empty string
     }
+  },
+  methods: {
+    toggleSearch() {
+
+    },
+    toggleLogout() {
+        
+    },
   }
 };
 </script>
 
 <style scoped>
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
 .title-img {
     padding-right: 10px;
 }
