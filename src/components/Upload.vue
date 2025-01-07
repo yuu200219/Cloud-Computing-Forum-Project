@@ -30,7 +30,7 @@ const router = useRouter();
     <!-- </div> -->
     <Textarea v-model="blogContent" rows="10" cols="50" placeholder="什麼新鮮事？" />
     <template #footer>
-      <Button label="Upload" icon="pi pi-upload" @click="handlePost" />
+      <Button label="Upload" icon="pi pi-upload" :loading="loading" @click="handlePost" />
       <Button label="Cancel" icon="pi pi-times" @click="visible = false" />
     </template>
   </Dialog>

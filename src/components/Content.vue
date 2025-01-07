@@ -143,6 +143,9 @@ export default {
                 console.log(post);
             }
         },
+        toggleAIGenerating() {
+            
+        },
         showCommentDialog(postId) {
             const post = this.posts.find((p) => p.id === postId);
             if (post) {
@@ -156,11 +159,6 @@ export default {
                 post.newComment = '';
             }
         },
-        // sendPostsToParent() {
-        //   // 使用 $emit 触发事件，将 posts 数据发送到父组件
-        //   console.log("post.vue send event to Content.vue");
-        //   this.$emit('updateposts', this.posts);
-        // },
         updatePostsFromChild(posts) {
             this.posts = posts.map((post) => ({
                 ...post,
@@ -218,21 +216,23 @@ export default {
                 <TabPanels>
                     <TabPanel value="0">
                         <div class="post-container">
-                            <div v-for="post in sortedByLikes" :key="post.id" class="post">
+                            <div v-for="post in sortedByLikes" :key="post.id" class="post flex-col gap-2">
+                                <div class="post-header">
+                                    <img :src="post.avatar" alt="User Avatar" class="avatar" />
+                                    <span class="username">{{ post.username }}</span>
+                                </div>
                                 <p>
                                     {{ formatTimestamp(post.timestamp) }}
                                 </p>
-                                <br>
-                                <p>
-                                    {{ post.isExpanded ? post.content : (post.content.slice(0, 100) + '...') }}
+                                <p class="post-content">
+                                    {{ post.content.length > 100? (post.isExpanded ? post.content : (post.content.slice(0, 100) + '...')) : post.content }}
                                 </p>
-                                <Button @click="toggleView(post.id)" variant="text"
+                                <Button v-if="post.content.length > 100" @click="toggleView(post.id)" variant="text"
                                     style="font-size: 15px; color: gray; padding: 0">
                                     {{ post.isExpanded ? 'View Less' : 'View More...' }}
                                 </Button>
                                 <br>
                                 <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
-                                <br>
                                 <br>
                                 <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" rounded variant="text"
                                     @click="toggleLike(post.id)" :style="post.isLiked ? 'color: red' : ''" />
@@ -243,36 +243,52 @@ export default {
                                 <Dialog v-model:visible="post.isCommentDialogVisible" modal :key="'dialog-' + post.id">
                                     <template #header>
                                         <div class="dialog-header">
-                                            <!-- <Button label="取消" text plain rounded=""/> -->
                                             <span class="reply">回覆</span>
                                         </div>
                                     </template>
-                                    <div class="post-header">
-                                        <img :src="post.avatar" alt="User Avatar" class="avatar" />
-                                        <span class="username">{{ post.username }}</span>
-                                    </div>
-                                    <div class="comment-content-wrapper">
+                                    <div class="post flex-col gap-2">
+                                        <div class="post-header">
+                                            <img :src="post.avatar" alt="User Avatar" class="avatar" />
+                                            <span class="username">{{ post.username }}</span>
+                                        </div>
                                         <p>
-                                            {{ post.content }}
+                                            {{ formatTimestamp(post.timestamp) }}
                                         </p>
-                                        <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
-                                        <Divider />
-                                        <div>
-                                            <div v-for="(comment, index) in post.comments" :key="index">
-                                                <p class="comment-wrapper">
-                                                    {{ comment }}
-                                                </p>
-                                                <Divider />
+                                        <div class="comment-content-wrapper">
+                                            <p>
+                                                {{ post.content }}
+                                            </p>
+                                            <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
+                                            <br>
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" rounded variant="text"
+                                                        @click="toggleLike(post.id)" :style="post.isLiked ? 'color: red' : ''" />
+                                                    <span>{{ post.likeCount }}</span>
+                                                </div>
+                                                <Button icon="pi pi-microchip-ai" rounded @click="toggleAIGenerating" style="margin-left: auto;" text/>
                                             </div>
+                                            <Divider />
+                                            <div>
+                                                <div v-for="(comment, index) in post.comments" :key="index">
+                                                    <p class="comment-wrapper">
+                                                        {{ comment }}
+                                                    </p>
+                                                    <Divider />
+                                                </div>
 
+                                            </div>
+                                            
+                                            <div class="textarea-container">
+                                                <Textarea v-model="post.newComment" rows="1" cols="50"
+                                                    class="custom-textarea" placeholder="寫下評論..." style="resize: none"
+                                                    auto-resize />
+                                                <Button icon="pi pi-send" @click="addComment(post.id)" plain text rounded
+                                                    class="send-button" />
+                                            </div>
                                         </div>
-                                        <div class="textarea-container">
-                                            <Textarea v-model="post.newComment" rows="1" cols="50"
-                                                class="custom-textarea" placeholder="寫下評論..." style="resize: none"
-                                                auto-resize />
-                                            <Button icon="pi pi-send" @click="addComment(post.id)" plain text rounded
-                                                class="send-button" />
-                                        </div>
+                                        
+
                                     </div>
                                 </Dialog>
                             </div>
@@ -282,28 +298,19 @@ export default {
                     <!-- 最新貼文（根據 timestamp 排序） -->
                     <TabPanel value="1">
                         <div class="post-container">
-                            <!-- <post @updateposts="handleUpdatedPosts" /> -->
-                            <!-- <Post
-                                v-for="post in posts"
-                                :key="post.id"
-                                class="post"
-                                :post="post"
-                            /> -->
-                            <div v-for="post in sortedByTimestamp" :key="post.id" class="post">
+                            <div v-for="post in sortedByTimestamp" :key="post.id" class="post flex-col gap-2">
                                 <p>
                                     {{ formatTimestamp(post.timestamp) }}
                                 </p>
-                                <br>
-                                <p>
-                                    {{ post.isExpanded ? post.content : (post.content.slice(0, 100) + '...') }}
+                                <p class="post-content">
+                                    {{ post.content.length > 100? (post.isExpanded ? post.content : (post.content.slice(0, 100) + '...')) : post.content }}
                                 </p>
-                                <Button @click="toggleView(post.id)" variant="text"
+                                <Button v-if="post.content.length > 100" @click="toggleView(post.id)" variant="text"
                                     style="font-size: 15px; color: gray; padding: 0">
                                     {{ post.isExpanded ? 'View Less' : 'View More...' }}
                                 </Button>
                                 <br>
                                 <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
-                                <br>
                                 <br>
                                 <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" rounded variant="text"
                                     @click="toggleLike(post.id)" :style="post.isLiked ? 'color: red' : ''" />
@@ -318,34 +325,47 @@ export default {
                                             <span class="reply">回覆</span>
                                         </div>
                                     </template>
-                                    <div class="post-header">
-                                        <img :src="post.avatar" alt="User Avatar" class="avatar" />
-                                        <span class="username">{{ post.username }}</span>
-                                    </div>
-                                    <div class="comment-content-wrapper">
+                                    <div class="post flex-col gap-2">
+                                        <div class="post-header">
+                                            <img :src="post.avatar" alt="User Avatar" class="avatar" />
+                                            <span class="username">{{ post.username }}</span>
+                                        </div>
                                         <p>
-                                            {{ post.content }}
+                                            {{ formatTimestamp(post.timestamp) }}
                                         </p>
-                                        <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
-                                        <Divider />
-                                        <div>
-                                            <div v-for="(comment, index) in post.comments" :key="index">
-                                                <p class="comment-wrapper">
-                                                    {{ post.username }} {{ comment }}
-                                                </p>
-                                                <Divider />
+                                        <div class="comment-content-wrapper">
+                                            <p>
+                                                {{ post.content }}
+                                            </p>
+                                            <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
+                                            <br>
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" rounded variant="text"
+                                                        @click="toggleLike(post.id)" :style="post.isLiked ? 'color: red' : ''" />
+                                                    <span>{{ post.likeCount }}</span>
+                                                </div>
+                                                <Button icon="pi pi-microchip-ai" rounded @click="toggleAIGenerating" style="margin-left: auto;" text/>
                                             </div>
+                                            <Divider />
+                                            <div>
+                                                <div v-for="(comment, index) in post.comments" :key="index">
+                                                    <p class="comment-wrapper">
+                                                        {{ post.username }} {{ comment }}
+                                                    </p>
+                                                    <Divider />
+                                                </div>
 
-                                        </div>
-                                        <div class="textarea-container">
-                                            <Textarea v-model="post.newComment" rows="1" cols="50"
-                                                class="custom-textarea" placeholder="寫下評論..." style="resize: none"
-                                                auto-resize />
-                                            <Button icon="pi pi-send" @click="addComment(post.id)" plain text rounded
-                                                class="send-button" />
+                                            </div>
+                                            <div class="textarea-container">
+                                                <Textarea v-model="post.newComment" rows="1" cols="50"
+                                                    class="custom-textarea" placeholder="寫下評論..." style="resize: none"
+                                                    auto-resize />
+                                                <Button icon="pi pi-send" @click="addComment(post.id)" plain text rounded
+                                                    class="send-button" />
+                                            </div>
                                         </div>
                                     </div>
-
                                 </Dialog>
                             </div>
                         </div>
@@ -403,8 +423,8 @@ export default {
     margin-bottom: 10px;
     height: 90%;
     margin: 0 10% 0 10%;
-    min-width: 350px;
-    max-width: 700px;
+    min-width: 600px;
+    max-width: 1000px;
 }
 
 .tab-list-container {
@@ -425,11 +445,15 @@ export default {
     /* Takes remaining space below the tabs */
     overflow: scroll !important;
     /* Enables scrolling within the post container */
-    padding: 20px !important;
+    padding: 40px !important;
     /* Optional: adds spacing around the posts */
     height: 100% !important;
     align-items: center !important;
     justify-content: center !important;
+}
+
+.post-content {
+    margin-top: 20px;
 }
 
 /* .tab {
@@ -466,6 +490,7 @@ p {
 }
 
 .comment-content-wrapper {
+    margin-top: 20px;
     align-items: center;
     justify-self: center;
     max-width: 500px;

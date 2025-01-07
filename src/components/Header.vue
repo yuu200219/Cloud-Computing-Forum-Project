@@ -5,7 +5,7 @@ import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
-
+import ChillGuyImage from "@/assets/img/chillguy.jpg";
 
 import { InputText } from 'primevue';
 import { ref } from "vue";
@@ -20,27 +20,27 @@ const items_start = ref([
                 router.push('/home')
         },
     },
-    {
-        label: 'Notification',
-        icon: 'pi pi-bell',
-    },
-    {
-        label: 'Settings',
-        icon: 'pi pi-cog',
-        items: [
-            {
-                label: 'Profile',
-                icon: 'pi pi-user'
-            },
-            {
-                label: 'Logout',
-                icon: 'pi pi-sign-out',
-                command: () => {
-                    router.push('/')
-                }
-            }
-        ]
-    }
+    // {
+    //     label: 'Notification',
+    //     icon: 'pi pi-bell',
+    // },
+    // {
+    //     label: 'Settings',
+    //     icon: 'pi pi-cog',
+    //     items: [
+    //         {
+    //             label: 'Profile',
+    //             icon: 'pi pi-user'
+    //         },
+    //         {
+    //             label: 'Logout',
+    //             icon: 'pi pi-sign-out',
+    //             command: () => {
+    //                 router.push('/')
+    //             }
+    //         }
+    //     ]
+    // }
 ])
 </script>
 
@@ -85,20 +85,19 @@ const items_start = ref([
                     <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down" />
                 </a>
             </template>
-            <div class="flex items-center gap-2">
-                <InputGroup>
-                    <InputText placeholder="Search" type="text" class="w-32 sm:w-auto" />
-                    <InputGroupAddon>
-                        <Button icon="pi pi-search" severity="secondary" variant="text" @click="toggle" />
-                    </InputGroupAddon>
-                </InputGroup>
-            </div>
+            
             
             <template #end>
-                <!-- <Button label="Post" icon="pi pi-pen-to-square" text plain rounded class="post-icon"/> -->
-                <!-- <Button label="Notification" icon="pi pi-bell" text plain rounded/>
-                <Button label="Settings" icon="pi pi-cog" text plain rounded/> -->
-                <Avatar label="Y" shape="circle" style="background-color: #ece9fc; color: #2a1261"/>
+                <div class="flex items-center gap-2">
+                    <InputGroup>
+                        <InputText placeholder="Search" type="text" class="w-32 sm:w-auto" />
+                        <InputGroupAddon>
+                            <Button icon="pi pi-search" severity="secondary" variant="text" @click="toggleSearch" />
+                        </InputGroupAddon>
+                    </InputGroup>
+                    <Avatar :image="ChillGuyImage" shape="circle" style="background-color: #ece9fc; color: #2a1261"/>
+                </div>
+                
             </template>
 
         </Menubar>
@@ -149,6 +148,11 @@ export default {
 }
 .menu-bar .pi-home {
     border-radius: 50%;
+}
+.p-avatar img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
 }
 
 </style>
