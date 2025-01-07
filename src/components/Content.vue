@@ -12,6 +12,8 @@ import TabPanel from 'primevue/tabpanel';
 import Divider from 'primevue/divider';
 import Dialog from 'primevue/dialog';
 import Textarea from 'primevue/textarea';
+import Fieldset from 'primevue/fieldset';
+
 
 import Button from 'primevue/button';
 import Image from 'primevue/image';
@@ -21,6 +23,7 @@ import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { computed } from 'vue';
 import ChillGuyImage from "@/assets/img/chillguy.jpg";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const toast = useToast();
 const visible = ref(false);
@@ -84,6 +87,7 @@ export default {
     data() {
         return {
             posts: [], // 定義響應式數據 posts
+            ai_content: "",
         };
     },
     computed: {
@@ -118,6 +122,7 @@ export default {
                 comments: post.comments || [],
                 username: "hank",
                 avatar: ChillGuyImage,
+                aivisiable: false,
             }));
         } catch (error) {
             console.error('Error fetching posts:', error);
@@ -143,8 +148,26 @@ export default {
                 console.log(post);
             }
         },
-        toggleAIGenerating() {
-            
+        async toggleAIGenerating(postId) {
+            const post = this.posts.find((p) => p.id === postId);
+            if (post) {
+                if(!post.aivisiable){
+                    post.aivisiable = !post.aivisiable;
+
+                    const genAI = new GoogleGenerativeAI("AIzaSyAMcwm0LriKxZf8meNSA1JmZ_l0jMO_k4E");
+                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+                    const prompt = "給我摘要 : " + post.content;
+
+                    const result = await model.generateContent(prompt);
+                    console.log(result.response.text());
+                    this.ai_content = result.response.text();
+                }
+                else{
+                    this.ai_content="";
+                    post.aivisiable = !post.aivisiable;
+                }
+            }
         },
         showCommentDialog(postId) {
             const post = this.posts.find((p) => p.id === postId);
@@ -170,6 +193,7 @@ export default {
                 comments: post.comments || [],
                 username: "hank",
                 avatar: ChillGuyImage,
+                aivisiable: false,
             }));
             //   this.sendPostsToParent(); 
             console.log(this.posts)
@@ -225,7 +249,9 @@ export default {
                                     {{ formatTimestamp(post.timestamp) }}
                                 </p>
                                 <p class="post-content">
-                                    {{ post.content.length > 100? (post.isExpanded ? post.content : (post.content.slice(0, 100) + '...')) : post.content }}
+                                    {{ post.content.length > 100 ? (post.isExpanded ? post.content :
+                                        (post.content.slice(0, 100)
+                                            + '...')) : post.content }}
                                 </p>
                                 <Button v-if="post.content.length > 100" @click="toggleView(post.id)" variant="text"
                                     style="font-size: 15px; color: gray; padding: 0">
@@ -258,15 +284,25 @@ export default {
                                             <p>
                                                 {{ post.content }}
                                             </p>
+                                            <div class="card" v-if="post.aivisiable">
+                                                <Fieldset legend="AI 摘要">
+                                                    <p class="m-0">
+                                                        {{ ai_content }}
+                                                    </p>
+                                                </Fieldset>
+                                            </div>
                                             <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
                                             <br>
                                             <div class="flex items-center justify-between">
                                                 <div>
-                                                    <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" rounded variant="text"
-                                                        @click="toggleLike(post.id)" :style="post.isLiked ? 'color: red' : ''" />
+                                                    <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                                                        rounded variant="text" @click="toggleLike(post.id)"
+                                                        :style="post.isLiked ? 'color: red' : ''" />
                                                     <span>{{ post.likeCount }}</span>
                                                 </div>
-                                                <Button icon="pi pi-microchip-ai" rounded @click="toggleAIGenerating" style="margin-left: auto;" text/>
+                                                <Button icon="pi pi-microchip-ai" rounded
+                                                    @click="toggleAIGenerating(post.id)" style="margin-left: auto;"
+                                                    text />
                                             </div>
                                             <Divider />
                                             <div>
@@ -278,16 +314,16 @@ export default {
                                                 </div>
 
                                             </div>
-                                            
+
                                             <div class="textarea-container">
                                                 <Textarea v-model="post.newComment" rows="1" cols="50"
                                                     class="custom-textarea" placeholder="寫下評論..." style="resize: none"
                                                     auto-resize />
-                                                <Button icon="pi pi-send" @click="addComment(post.id)" plain text rounded
-                                                    class="send-button" />
+                                                <Button icon="pi pi-send" @click="addComment(post.id)" plain text
+                                                    rounded class="send-button" />
                                             </div>
                                         </div>
-                                        
+
 
                                     </div>
                                 </Dialog>
@@ -299,11 +335,17 @@ export default {
                     <TabPanel value="1">
                         <div class="post-container">
                             <div v-for="post in sortedByTimestamp" :key="post.id" class="post flex-col gap-2">
+                                <div class="post-header">
+                                    <img :src="post.avatar" alt="User Avatar" class="avatar" />
+                                    <span class="username">{{ post.username }}</span>
+                                </div>
                                 <p>
                                     {{ formatTimestamp(post.timestamp) }}
                                 </p>
                                 <p class="post-content">
-                                    {{ post.content.length > 100? (post.isExpanded ? post.content : (post.content.slice(0, 100) + '...')) : post.content }}
+                                    {{ post.content.length > 100 ? (post.isExpanded ? post.content :
+                                        (post.content.slice(0, 100)
+                                            + '...')) : post.content }}
                                 </p>
                                 <Button v-if="post.content.length > 100" @click="toggleView(post.id)" variant="text"
                                     style="font-size: 15px; color: gray; padding: 0">
@@ -337,15 +379,26 @@ export default {
                                             <p>
                                                 {{ post.content }}
                                             </p>
+                                            <div class="card" v-if="post.aivisiable">
+                                                <Fieldset legend="AI 摘要">
+                                                    <p class="m-0">
+                                                        {{ ai_content }}
+                                                    </p>
+                                                </Fieldset>
+                                            </div>
                                             <img v-if="post.img" :src="post.img" alt="Post Image" class="post-image" />
                                             <br>
                                             <div class="flex items-center justify-between">
                                                 <div>
-                                                    <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'" rounded variant="text"
-                                                        @click="toggleLike(post.id)" :style="post.isLiked ? 'color: red' : ''" />
+                                                    <Button :icon="post.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                                                        rounded variant="text" @click="toggleLike(post.id)"
+                                                        :style="post.isLiked ? 'color: red' : ''" />
                                                     <span>{{ post.likeCount }}</span>
                                                 </div>
-                                                <Button icon="pi pi-microchip-ai" rounded @click="toggleAIGenerating" style="margin-left: auto;" text/>
+                                                <Button icon="pi pi-microchip-ai" rounded
+                                                    @click="toggleAIGenerating(post.id)" style="margin-left: auto;"
+                                                    text />
+
                                             </div>
                                             <Divider />
                                             <div>
@@ -361,8 +414,8 @@ export default {
                                                 <Textarea v-model="post.newComment" rows="1" cols="50"
                                                     class="custom-textarea" placeholder="寫下評論..." style="resize: none"
                                                     auto-resize />
-                                                <Button icon="pi pi-send" @click="addComment(post.id)" plain text rounded
-                                                    class="send-button" />
+                                                <Button icon="pi pi-send" @click="addComment(post.id)" plain text
+                                                    rounded class="send-button" />
                                             </div>
                                         </div>
                                     </div>

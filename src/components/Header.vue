@@ -17,7 +17,7 @@ const items_start = ref([
         label: 'Home',
         icon: 'pi pi-home',
         command: () => {
-                router.push('/home')
+            router.push('/home')
         },
     },
     // {
@@ -52,7 +52,7 @@ const items_start = ref([
                     <span class="text-xl font-semibold">NCU<span class="text-primary">Forum</span></span>
                 </div>
             </template>
-            <template #end>
+<template #end>
                 <div class="flex items-center gap-2">
                     <InputGroup>
                         <InputText placeholder="Search" type="text" class="w-32 sm:w-auto" />
@@ -62,13 +62,13 @@ const items_start = ref([
                     </InputGroup>
                 </div>
             </template>
-        </Menubar> -->
+</Menubar> -->
         <Menubar class="menu-bar" :model="items_start">
             <template #start>
                 <div class="title-img">
                     <span class="text-xl font-semibold">
                         NCU<span class="text-primary">Forum</span>
-                         /  {{ currentSubdirectory }}
+                        / {{ currentSubdirectory }}
                     </span>
                 </div>
             </template>
@@ -85,8 +85,8 @@ const items_start = ref([
                     <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down" />
                 </a>
             </template>
-            
-            
+
+
             <template #end>
                 <div class="flex items-center gap-2">
                     <InputGroup>
@@ -98,7 +98,7 @@ const items_start = ref([
                     <Button label="Logout" icon="pi pi-sign-out" text plain @click="toggleLogout" />
                     <img :src=ChillGuyImage alt="User Avatar" class="avatar" />
                 </div>
-                
+
             </template>
 
         </Menubar>
@@ -110,27 +110,36 @@ const items_start = ref([
 
 <script>
 export default {
-  computed: {
-    CapitalizeFirstLetter() {
-        return (str) => {
-        if (str.length === 0) return str; // Check for empty string
-        return str.charAt(0).toUpperCase() + str.slice(1);
-      };
+    computed: {
+        CapitalizeFirstLetter() {
+            return (str) => {
+                if (str.length === 0) return str; // Check for empty string
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            };
+        },
+        currentSubdirectory() {
+            const path = this.$route.path; // Get the current path
+            const segments = path.split('/').filter(Boolean); // Split by '/' and remove empty segments
+            return this.CapitalizeFirstLetter(segments[segments.length - 1]) || ''; // Return the first segment or an empty string
+        }
     },
-    currentSubdirectory() {
-      const path = this.$route.path; // Get the current path
-      const segments = path.split('/').filter(Boolean); // Split by '/' and remove empty segments
-      return this.CapitalizeFirstLetter(segments[segments.length-1]) || ''; // Return the first segment or an empty string
-    }
-  },
-  methods: {
-    toggleSearch() {
+    methods: {
+        toggleSearch() {
 
-    },
-    toggleLogout() {
-        
-    },
-  }
+        },
+        async toggleLogout() {
+            window.location.href = 'https://us-east-1benj93hcb.auth.us-east-1.amazoncognito.com/logout?client_id=4jblimljbaluvmaoq74118ehkp&nonce=HYuirS3eyAdMcEZAqLR8&logout_uri=https://zs49un6n95.execute-api.us-east-1.amazonaws.com/logout';
+            // const response = await fetch('https://zs49un6n95.execute-api.us-east-1.amazonaws.com/logout', {
+            //     method: 'GET',
+            //     credentials: 'include',
+            //     headers: { 'Content-Type': 'application/json' },
+            // });
+
+            // if (!response.ok) {
+            //     throw new Error('Failed to logout');
+            // }
+        },
+    }
 };
 </script>
 
@@ -142,17 +151,19 @@ export default {
     margin-right: 10px;
     object-fit: cover;
 }
+
 .title-img {
     padding-right: 10px;
 }
+
 .top-section {
-  display: flex;
-  position: fixed;
-  align-items: center;
-  justify-content: center;
-  top: 0px;
-  width: 100%;
-  z-index: 1000;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    top: 0px;
+    width: 100%;
+    z-index: 1000;
 }
 
 .menu-bar {
@@ -162,13 +173,14 @@ export default {
 .profile {
     flex: 5%;
 }
+
 .menu-bar .pi-home {
     border-radius: 50%;
 }
+
 .p-avatar img {
     object-fit: cover;
     width: 100%;
     height: 100%;
 }
-
 </style>
